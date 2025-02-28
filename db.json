@@ -1,0 +1,28 @@
+{
+  "dispositivos": [
+    {
+      "id": 1740311823709,
+      "nome": "Notebook Alienware M15",
+      "tipo": "Equipamento",
+      "quantidade": "9"
+    },
+    {
+      "id": 1740311846931,
+      "nome": "Lamborghini Gallardo",
+      "tipo": "veiculo",
+      "quantidade": "1"
+    },
+    {
+      "id": 1740311866633,
+      "nome": "Rádio Walk Talk",
+      "tipo": "dispositivo",
+      "quantidade": "20"
+    },
+    {
+      "id": 1740311892966,
+      "nome": "Câmera de Segurança",
+      "tipo": "dispositivo",
+      "quantidade": "220"
+    }
+  ]
+}
