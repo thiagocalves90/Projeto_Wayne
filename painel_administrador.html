@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Administrador - Indústrias Wayne</title>
+    <link rel="stylesheet" href="estiloswayne.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Painel do Administrador</h1>
+        <p>Bem-vindo ao painel de administradores das Indústrias Wayne.</p>
+        <p>Aqui você pode gerenciar todos os dispositivos internos.</p>
+
+        <h2>Gerenciamento de Dispositivos</h2>
+        <form id="formularioDispositivo">
+            <label for="nomeDispositivo">Nome do Dispositivo:</label>
+            <input type="text" id="nomeDispositivo" name="nomeDispositivo" required>
+
+            <label for="tipoDispositivo">Tipo de Dispositivo:</label>
+            <select id="tipoDispositivo" name="tipoDispositivo" required>
+                <option value="equipamento">Equipamento</option>
+                <option value="veiculo">Veículo</option>
+                <option value="dispositivo">Dispositivo de Segurança</option>
+            </select>
+
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" id="quantidade" name="quantidade" required>
+
+            <button type="submit">Adicionar Dispositivo</button>
+        </form>
+
+        <h2>Lista de Dispositivos</h2>
+        <ul id="listaDispositivos"></ul>
+
+        <a href="dashboard.html">Acessar Dashboard</a>
+        <a href="gerenciamento_home.html">Sair</a>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/dispositivos';
+
+        // Função para carregar dispositivos
+        async function carregarDispositivos() {
+            const response = await fetch(API_URL);
+            const dispositivos = await response.json();
+            const listaDispositivos = document.getElementById('listaDispositivos');
+            listaDispositivos.innerHTML = '';
+
+            dispositivos.forEach((dispositivo) => {
+                const itemLista = document.createElement('li');
+                itemLista.innerHTML = `
+                    ${dispositivo.nome} (${dispositivo.tipo}) - Quantidade: ${dispositivo.quantidade}
+                    <button onclick="editarDispositivo(${dispositivo.id})">Editar</button>
+                    <button onclick="removerDispositivo(${dispositivo.id})">Remover</button>
+                `;
+                listaDispositivos.appendChild(itemLista);
+            });
+        }
+
+        // Função para adicionar dispositivo
+        document.getElementById('formularioDispositivo').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const nomeDispositivo = document.getElementById('nomeDispositivo').value;
+            const tipoDispositivo = document.getElementById('tipoDispositivo').value;
+            const quantidade = document.getElementById('quantidade').value;
+
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome: nomeDispositivo, tipo: tipoDispositivo, quantidade })
+            });
+
+            if (response.ok) {
+                alert('Dispositivo adicionado com sucesso!');
+                document.getElementById('formularioDispositivo').reset();
+                carregarDispositivos();
+            }
+        });
+
+        // Função para editar dispositivo
+        async function editarDispositivo(id) {
+            const novoNome = prompt("Editar nome do dispositivo:");
+            const novoTipo = prompt("Editar tipo do dispositivo:");
+            const novaQuantidade = prompt("Editar quantidade:");
+
+            if (novoNome && novoTipo && novaQuantidade) {
+                const response = await fetch(`${API_URL}/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome: novoNome, tipo: novoTipo, quantidade: novaQuantidade })
+                });
+
+                if (response.ok) {
+                    alert('Dispositivo atualizado com sucesso!');
+                    carregarDispositivos();
+                }
+            }
+        }
+
+        // Função para remover dispositivo
+        async function removerDispositivo(id) {
+            const confirmacao = confirm("Tem certeza que deseja remover este dispositivo?");
+            if (confirmacao) {
+                const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    alert('Dispositivo removido com sucesso!');
+                    carregarDispositivos();
+                }
+            }
+        }
+
+        // Carregar dispositivos ao abrir a página
+        window.onload = carregarDispositivos;
+    </script>
+</body>
+</html>

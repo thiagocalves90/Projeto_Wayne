@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Indústrias Wayne</title>
+    <link rel="stylesheet" href="estiloswayne.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Biblioteca Chart.js para gráficos -->
+</head>
+<body>
+    <div class="container">
+        <h1>Dashboard de Segurança e Recursos</h1>
+        <p>Bem-vindo ao painel de controle das Indústrias Wayne.</p>
+
+        <div class="dashboard-grid">
+            <!-- Card 1: Total de Dispositivos -->
+            <div class="card">
+                <h2>Total de Dispositivos</h2>
+                <p id="totalDispositivos">Carregando...</p>
+            </div>
+
+            <!-- Card 2: Tipos de Dispositivos (Gráfico de Pizza) -->
+            <div class="card">
+                <h2>Tipos de Dispositivos</h2>
+                <canvas id="graficoPizza"></canvas>
+            </div>
+
+            <!-- Card 3: Atividades Recentes -->
+            <div class="card">
+                <h2>Atividades Recentes</h2>
+                <ul id="atividadesRecentes"></ul>
+            </div>
+
+            <!-- Card 4: Status de Segurança -->
+            <div class="card">
+                <h2>Status de Segurança</h2>
+                <p id="statusSeguranca">Tudo seguro!</p>
+            </div>
+        </div>
+
+        <a href="painel_admin.html">Voltar ao Painel</a>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/dispositivos';
+
+        // Função para carregar dados da dashboard
+        async function carregarDashboard() {
+            try {
+                // Obter dispositivos
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar dados');
+                }
+                const dispositivos = await response.json();
+
+                // Atualizar total de dispositivos
+                document.getElementById('totalDispositivos').textContent = dispositivos.length;
+
+                // Atualizar gráfico de tipos de dispositivos
+                const tipos = dispositivos.reduce((acc, dispositivo) => {
+                    acc[dispositivo.tipo] = (acc[dispositivo.tipo] || 0) + 1;
+                    return acc;
+                }, {});
+
+                const ctx = document.getElementById('graficoPizza').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(tipos),
+                        datasets: [{
+                            data: Object.values(tipos),
+                            backgroundColor: ['#ffdf00', '#007bff', '#28a745'], // Cores do gráfico
+                        }]
+                    }
+                });
+
+                // Atualizar atividades recentes (simulação)
+                const atividadesRecentes = [
+                    "Novo dispositivo adicionado: Câmera de Segurança",
+                    "Dispositivo atualizado: Veículo Blindado",
+                    "Alerta de segurança verificado"
+                ];
+                const listaAtividades = document.getElementById('atividadesRecentes');
+                listaAtividades.innerHTML = atividadesRecentes.map(atividade => `<li>${atividade}</li>`).join('');
+
+                // Atualizar status de segurança (simulação)
+                const statusSeguranca = dispositivos.length > 0 ? "Tudo seguro!" : "Nenhum dispositivo cadastrado.";
+                document.getElementById('statusSeguranca').textContent = statusSeguranca;
+
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao carregar dashboard. Verifique o console para mais detalhes.');
+            }
+        }
+
+        // Carregar dashboard ao abrir a página
+        window.onload = carregarDashboard;
+    </script>
+</body>
+</html>

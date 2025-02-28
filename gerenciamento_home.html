@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gerenciamento de Segurança - Indústrias Wayne</title>
+    <link rel="stylesheet" href="estiloswayne.css">
+</head>
+<body>
+    <div class="container-login">
+        <h1>Indústrias Wayne</h1>
+        <h2>Sistema de Gerenciamento de Segurança</h2>
+        <form id="formularioLogin">
+            <label for="usuario">Usuário:</label>
+            <input type="text" id="usuario" name="usuario" required placeholder="Usuário">
+            
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" name="senha" required placeholder="Senha">
+            
+            <button type="submit">Login</button>
+        </form>
+        <p id="mensagemErro" class="mensagem-erro"></p>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Consutech. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        const usuarios = {
+            "funcionario": { senha: "func123", cargo: "funcionario" },
+            "gerente": { senha: "ger123", cargo: "gerente" },
+            "admin": { senha: "admin123", cargo: "administrador" }
+        };
+
+        document.getElementById('formularioLogin').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const usuario = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
+
+            if (usuarios[usuario] && usuarios[usuario].senha === senha) {
+                alert(`Bem-vindo, ${usuario}! Redirecionando para a área de ${usuarios[usuario].cargo}.`);
+                // Redirecionamento com base no cargo do usuário
+                switch (usuarios[usuario].cargo) {
+                    case 'funcionario':
+                        window.location.href = 'painel_funcionario.html';
+                        break;
+                    case 'gerente':
+                        window.location.href = 'painel_gerente.html';
+                        break;
+                    case 'administrador':
+                        window.location.href = 'painel_administrador.html';
+                        break;
+                }
+            } else {
+                document.getElementById('mensagemErro').textContent = 'Usuário ou senha incorretos.';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Gerente - Indústrias Wayne</title>
+    <link rel="stylesheet" href="estiloswayne.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Painel do Gerente</h1>
+        <p>Bem-vindo ao painel de gerentes das Indústrias Wayne.</p>
+        <p>Aqui você pode visualizar e editar os dispositivos disponíveis.</p>
+
+        <h2>Lista de Dispositivos</h2>
+        <ul id="listaDispositivos"></ul>
+
+        <a href="dashboard.html">Acessar Dashboard</a>
+        <a href="gerenciamento_home.html">Sair</a>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/dispositivos';
+
+        // Função para carregar dispositivos
+        async function carregarDispositivos() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar dispositivos');
+                }
+                const dispositivos = await response.json();
+                const listaDispositivos = document.getElementById('listaDispositivos');
+                listaDispositivos.innerHTML = '';
+
+                dispositivos.forEach((dispositivo) => {
+                    const itemLista = document.createElement('li');
+                    itemLista.innerHTML = `
+                        ${dispositivo.nome} (${dispositivo.tipo}) - Quantidade: ${dispositivo.quantidade}
+                        <button onclick="editarDispositivo(${dispositivo.id})">Editar</button>
+                    `;
+                    listaDispositivos.appendChild(itemLista);
+                });
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao carregar dispositivos. Verifique o console para mais detalhes.');
+            }
+        }
+
+        // Função para editar dispositivo
+        async function editarDispositivo(id) {
+            const novoNome = prompt("Editar nome do dispositivo:");
+            const novoTipo = prompt("Editar tipo do dispositivo:");
+            const novaQuantidade = prompt("Editar quantidade:");
+
+            if (novoNome && novoTipo && novaQuantidade) {
+                try {
+                    const response = await fetch(`${API_URL}/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nome: novoNome, tipo: novoTipo, quantidade: novaQuantidade })
+                    });
+
+                    if (response.ok) {
+                        alert('Dispositivo atualizado com sucesso!');
+                        carregarDispositivos();
+                    } else {
+                        throw new Error('Erro ao atualizar dispositivo');
+                    }
+                } catch (error) {
+                    console.error('Erro:', error);
+                    alert('Erro ao editar dispositivo. Verifique o console para mais detalhes.');
+                }
+            }
+        }
+
+        // Carregar dispositivos ao abrir a página
+        window.onload = carregarDispositivos;
+    </script>
+</body>
+</html>
